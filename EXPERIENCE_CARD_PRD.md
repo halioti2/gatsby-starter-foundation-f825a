@@ -9,15 +9,16 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
 
 ### As a Content Editor
 - I want to add experience cards via Decap CMS without touching code
-- I want to edit company name, position, date range, duration, and responsibilities
+- I want to edit company info: company name, position, date range, duration, and responsibilities
 - I want to add/remove up to 4 key responsibility items per card
 - I want to format responsibility descriptions with bullet points
-- I want to preview the card before publishing
+- I want to optionally link each experience card to a related blog post
+- I want the card data structure to support future reordering functionality
 
 ### As a Website Visitor (Desktop)
-- I want to see experience cards with company info on the left (~35% width)
-- I want to see key responsibilities on the right (~65% width) in a 2x2 grid
-- I want responsibility titles and descriptions with blue-styled bullet points
+- I want to see experience cards with company info on the left (~35% viewport width)
+- I want to see key responsibilities on the right (~65% viewport width) in a 2x2 grid
+- I want responsibility boxes made of titles and descriptions with blue-styled bullet points
 - I want a visually distinct card design matching the site theme
 
 ### As a Website Visitor (Mobile)
@@ -46,6 +47,8 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
 | `responsibilities` | Array (max 4) | Yes | Array of responsibility objects |
 | `responsibilities[].title` | String | Yes | e.g., "PWA Development" |
 | `responsibilities[].description` | Markdown | Yes | Supports bullets, formatting |
+| `relatedBlogPost` | String | No | Slug of related blog post (future feature) |
+| `displayOrder` | Number | No | Display order (for future reordering feature) |
 
 ---
 
@@ -53,7 +56,7 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
 
 ### Files to Create
 - `src/components/experience-card.js` — React component
-- `src/assets/scss/experience-card.scss` — Styling
+- `src/assets/scss/experience-card.scss` — Styling with rem/em units
 - `src/content/experiences/` — Content folder (create empty initially)
 - Example: `src/content/experiences/conwo-solution.md` — Sample data
 
@@ -61,6 +64,11 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
 - `static/admin/config.yml` — Add experiences collection
 - `src/templates/index-page.js` — Query and display experience cards
 - `gatsby-config.js` — Ensure filesystem plugin sources experiences folder
+
+### Design Considerations for Future Reordering
+- Use `displayOrder` field to enable manual ordering via CMS UI
+- Query should sort by `displayOrder` if present, fallback to creation date
+- Implement drag-and-drop reordering in CMS (future release)
 
 ---
 
@@ -83,7 +91,7 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
 ```
 
 **Desktop Layout (>768px):**
-- Grid: 2 columns (35% | 65%)
+- Grid: 2 columns (35% left | 65% right)
 - Left: Company info (heading, position, date, duration)
 - Right: 2x2 grid of responsibility boxes with H4 "KEY RESPONSIBILITIES" header
 - Divider line between sections
@@ -118,6 +126,8 @@ Add a reusable **Experience Card** component to the homepage for displaying prof
       fields:
         - {label: "Title", name: "title", widget: "string", required: true}
         - {label: "Description", name: "description", widget: "markdown", hint: "Use markdown for bullets and formatting", required: true}
+    - {label: "Related Blog Post", name: "relatedBlogPost", widget: "string", required: false, hint: "Post slug to link (e.g., /my-project-story)"}
+    - {label: "Display Order", name: "displayOrder", widget: "number", required: false, hint: "Use for manual ordering (lower numbers appear first)"}
 ```
 
 ---
@@ -142,6 +152,8 @@ experiences: allFile(filter: {sourceInstanceName: {eq: "experiences"}}) {
             title
             description
           }
+          relatedBlogPost
+          displayOrder
         }
       }
     }
@@ -151,27 +163,67 @@ experiences: allFile(filter: {sourceInstanceName: {eq: "experiences"}}) {
 
 ### Rendering
 
-Add after blog posts section in homepage template:
+Replace blog posts section with experience cards on homepage template:
 
 ```jsx
 {data.experiences && data.experiences.edges.length > 0 && (
   <section className="experiences-section">
     <h2>Experience</h2>
-    {data.experiences.edges.map(({ node }) => (
-      <ExperienceCard
-        key={node.id}
-        {...node.childMarkdownRemark.frontmatter}
-      />
-    ))}
+    <div className="experiences-container">
+      {data.experiences.edges
+        .sort((a, b) => {
+          const orderA = a.node.childMarkdownRemark.frontmatter.displayOrder || 999;
+          const orderB = b.node.childMarkdownRemark.frontmatter.displayOrder || 999;
+          return orderA - orderB;
+        })
+        .map(({ node }) => (
+          <ExperienceCard
+            key={node.id}
+            {...node.childMarkdownRemark.frontmatter}
+          />
+        ))}
+    </div>
   </section>
 )}
 ```
+
+**Layout Notes:**
+- Experiences container has `max-width: 54rem` (860px) to match the card width shown in your design
+- Cards are centered on the page with `margin: 0 auto`
+- On MacBook full screen, cards take up ~50-60% of viewport width (as in your reference image)
+- On tablet/mobile, cards expand with padding but stay readable
 
 ---
 
 ## 7. Styling Details
 
-### Key Classes
+### Units & Sizing Philosophy
+**All measurements use rem units only (no px)**
+- Base font size: 16px → 1rem = 16px
+- All dimensions scale relative to font size
+- Ensures consistent responsive behavior across all devices
+
+### Container Structure
+```scss
+.experiences-section {
+  // Full-width section
+}
+
+.experiences-container {
+  max-width: 54rem;        // ~860px - matches your design reference
+  margin: 0 auto;          // Centered on page
+  padding: 0 1rem;         // Edge padding on mobile
+  
+  @media (min-width: 768px) {
+    padding: 0;            // No side padding on tablet+
+  }
+}
+
+.experience-card {
+  width: 100%;             // Full width within container
+  // ... rest of card styles
+}
+```
 - `.experience-card` — Main container
 - `.experience-card__info` — Left section (company/position/date)
 - `.experience-card__divider` — Vertical divider (desktop only)
@@ -180,13 +232,20 @@ Add after blog posts section in homepage template:
 - `.responsibility-box` — Individual responsibility item
 - `.responsibility-description` — Description text with bullets
 
-### Color & Styling
-- Company name: Large, bold heading
-- Position: Blue color (primary theme color)
-- Date/Duration: Muted color, smaller font
-- KEY RESPONSIBILITIES header: Uppercase, small, muted, letter-spaced
+### Container & Sizing
+- **Max-width:** 54rem (~860px) — Constrains card to ~50-60% of MacBook screen width
+- **Centering:** margin: 0 auto with padding for edges on mobile
+- **Padding:** 2rem on desktop, 1.5rem on tablet, 1rem on mobile (all rem units)
+- **Gap between left/right sections:** 3rem desktop, 1.5rem mobile
+
+### Color & Styling (using rem/em units for all measurements)
+- Company name: Large, bold heading (2rem font)
+- Position: Blue color (primary theme color), 1rem font
+- Date/Duration: Muted color, smaller font (0.875rem)
+- KEY RESPONSIBILITIES header: Uppercase, small (0.75rem), muted, letter-spaced
 - Bullet points: Blue colored markers
-- Responsibility boxes: Bordered, subtle background, rounded corners
+- Responsibility boxes: Bordered, subtle background, rounded corners (0.5rem border-radius)
+- All gaps, padding, margins: rem units only (no px)
 
 ---
 
@@ -228,15 +287,26 @@ responsibilities:
 
 ## 9. Responsive Breakpoints
 
-| Breakpoint | Behavior |
-|-----------|----------|
-| **Desktop (>768px)** | 2-column grid (35%/65%), 2x2 responsibility grid |
-| **Tablet (768px)** | Single column stack, responsibility items full width |
-| **Mobile (<480px)** | Reduced padding/margins, tighter spacing, larger touch targets |
+| Breakpoint | Card Width | Layout | Responsibility Grid |
+|-----------|-----------|--------|-------------------|
+| **Desktop (>1024px)** | max 54rem (860px), centered | 35% left / 65% right | 2x2 |
+| **Tablet (768px-1024px)** | 90% with padding | 35% left / 65% right | 1 column |
+| **Mobile (<768px)** | 100% with padding | Full stack (top/bottom) | 1 column |
 
 ---
 
-## 10. Acceptance Criteria
+## 10. CMS Preview & Publishing
+
+### Preview Behavior
+- **In CMS Editor:** You'll see the form fields and a text preview of your entries (field values displayed)
+- **Live Preview:** No visual card preview in the CMS editor itself
+- **Publishing:** Save the experience card in CMS → It immediately appears on the homepage
+- **Testing:** Refresh the homepage to see changes in real-time during development
+
+### No Blog Posts Section
+- Experience cards are now the primary content on the homepage
+- Blog posts have been removed from the homepage (previously displayed below experience cards)
+- Blog posts still exist and can be linked via `relatedBlogPost` field (future feature)
 
 - ✅ Experience collection created in Decap CMS
 - ✅ Can add/edit/delete experience cards via CMS

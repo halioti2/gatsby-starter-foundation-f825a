@@ -69,6 +69,81 @@ collections:
           hint: "Main content goes here.",
         }
 
+  - name: "experiences"
+    label: "Experience Cards"
+    label_singular: "Experience"
+    description: "Create and edit professional experience cards for the homepage"
+    folder: "src/content/experiences"
+    slug: "{{company}}-{{position}}"
+    summary: "{{company}} — {{position}}"
+    create: true
+    fields:
+      - {
+          label: "Company Name",
+          name: "company",
+          widget: "string",
+          required: true,
+          hint: "e.g., Conwo Solution Pvt. Ltd.",
+        }
+      - {
+          label: "Position Title",
+          name: "position",
+          widget: "string",
+          required: true,
+          hint: "e.g., Software Development Engineering Intern",
+        }
+      - {
+          label: "Date Range",
+          name: "dateRange",
+          widget: "string",
+          required: true,
+          hint: "e.g., JAN 2021 — AUGUST 2021",
+        }
+      - {
+          label: "Duration",
+          name: "duration",
+          widget: "string",
+          required: true,
+          hint: "e.g., 8 months",
+        }
+      - label: "Key Responsibilities"
+        name: "responsibilities"
+        widget: "list"
+        max: 4
+        min: 0
+        required: false
+        collapsed: false
+        hint: "Add up to 4 key responsibilities (optional, min 0, max 4)"
+        fields:
+          - {
+              label: "Title",
+              name: "title",
+              widget: "string",
+              required: false,
+              hint: "e.g., PWA Development",
+            }
+          - {
+              label: "Description",
+              name: "description",
+              widget: "markdown",
+              required: false,
+              hint: "Use markdown for bullets and formatting. Markdown lists will be rendered with blue bullet points.",
+            }
+      - {
+          label: "Related Blog Post",
+          name: "relatedBlogPost",
+          widget: "string",
+          required: false,
+          hint: "Post slug to link (e.g., /my-project-story) - future feature",
+        }
+      - {
+          label: "Display Order",
+          name: "displayOrder",
+          widget: "number",
+          required: false,
+          hint: "Use for manual ordering (lower numbers appear first). Leave blank to use creation date.",
+        }
+
   - label: "Pages"
     name: "pages"
     files:

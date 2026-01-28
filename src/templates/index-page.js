@@ -21,7 +21,7 @@ import {
 import { FaTiktok, FaWordpress, FaVk } from "react-icons/fa"
 
 import Layout from "../components/layout"
-import BlogListHome from "../components/blog-list-home"
+import ExperienceCard from "../components/experience-card"
 import Seo from "../components/seo"
 import Icons from "../util/socialmedia.json"
 
@@ -40,20 +40,21 @@ export const pageQuery = graphql`
         }
       }
     }
-    posts: allMarkdownRemark(
-      sort: { order: DESC, fields: [frontmatter___date] }
-      filter: { frontmatter: { template: { eq: "blog-post" } } }
-      limit: 6
+    experiences: allMarkdownRemark(
+      filter: { fileAbsolutePath: { regex: "/experiences/" } }
     ) {
       edges {
         node {
           id
-          excerpt(pruneLength: 250)
           frontmatter {
-            date(formatString: "MMMM DD, YYYY")
-            slug
-            title
-            featuredImage
+            company
+            position
+            dateRange
+            duration
+            responsibilities {
+              title
+              description
+            }
           }
         }
       }
@@ -62,9 +63,14 @@ export const pageQuery = graphql`
 `
 
 const HomePage = ({ data }) => {
-  const { markdownRemark, posts } = data // data.markdownRemark holds your post data
+  const { markdownRemark, experiences } = data // data.markdownRemark holds your page data
   const { frontmatter, html } = markdownRemark
   const Image = frontmatter.featuredImage
+  
+  // Debug logging
+  if (typeof window !== "undefined") {
+    console.log("Homepage data:", { experiences })
+  }
   const sIcons = Icons.socialIcons.map((icons, index) => {
     return (
       <div key={"social icons" + index}>
@@ -246,7 +252,33 @@ const HomePage = ({ data }) => {
           )}
         </div>
       </div>
-      <BlogListHome data={posts} />
+      {experiences && experiences.edges.length > 0 && (
+        <section className="experiences-section">
+          <h2>Experience</h2>
+          <div className="experiences-container">
+            {experiences.edges
+              .sort((a, b) => {
+                const orderA = a.node.frontmatter?.displayOrder ?? 999
+                const orderB = b.node.frontmatter?.displayOrder ?? 999
+                return orderA - orderB
+              })
+              .map(({ node }) => {
+                const fm = node.frontmatter
+                if (!fm) return null
+                return (
+                  <ExperienceCard
+                    key={node.id}
+                    company={fm.company}
+                    position={fm.position}
+                    dateRange={fm.dateRange}
+                    duration={fm.duration}
+                    responsibilities={fm.responsibilities || []}
+                  />
+                )
+              })}
+          </div>
+        </section>
+      )}
     </Layout>
   )
 }
