@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
 import { graphql, Link } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
 import { RiArrowRightSLine } from "react-icons/ri"
 import {
   RiFacebookBoxFill,
@@ -34,11 +33,7 @@ export const pageQuery = graphql`
       frontmatter {
         title
         tagline
-        featuredImage {
-          childImageSharp {
-            gatsbyImageData(layout: CONSTRAINED, width: 585, height: 439)
-          }
-        }
+        featuredImage
         cta {
           ctaText
           ctaLink
@@ -58,11 +53,7 @@ export const pageQuery = graphql`
             date(formatString: "MMMM DD, YYYY")
             slug
             title
-            featuredImage {
-              childImageSharp {
-                gatsbyImageData(layout: CONSTRAINED, width: 345, height: 260)
-              }
-            }
+            featuredImage
           }
         }
       }
@@ -74,8 +65,6 @@ const HomePage = ({ data }) => {
   const { markdownRemark, posts } = data // data.markdownRemark holds your post data
   const { frontmatter, html } = markdownRemark
   const Image = frontmatter.featuredImage
-    ? frontmatter.featuredImage.childImageSharp.gatsbyImageData
-    : ""
   const sIcons = Icons.socialIcons.map((icons, index) => {
     return (
       <div key={"social icons" + index}>
@@ -242,10 +231,15 @@ const HomePage = ({ data }) => {
         </div>
         <div>
           {Image ? (
-            <GatsbyImage
-              image={Image}
+            <img
+              src={Image}
               alt={frontmatter.title + " - Featured image"}
-              className="featured-image"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+                display: "block",
+              }}
             />
           ) : (
             ""

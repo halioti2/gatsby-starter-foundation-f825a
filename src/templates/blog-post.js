@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx } from "theme-ui"
 import { Link, graphql } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
 import { RiArrowRightLine, RiArrowLeftLine } from "react-icons/ri"
 
 import Layout from "../components/layout"
@@ -72,8 +71,6 @@ const Post = ({ data, pageContext }) => {
   const { frontmatter, html, excerpt } = markdownRemark
 
   const Image = frontmatter.featuredImage
-    ? frontmatter.featuredImage.childImageSharp.gatsbyImageData
-    : ""
   const { previous, next } = pageContext
 
   let props = {
@@ -98,10 +95,17 @@ const Post = ({ data, pageContext }) => {
             <time sx={{color: "muted"}}>{frontmatter.date}</time>
           </section>
           {Image ? (
-            <GatsbyImage
-              image={Image}
+            <img
+              src={Image}
               alt={frontmatter.title + " - Featured image"}
               className="featured-image"
+              style={{
+                display: "block",
+                margin: "0 auto",
+                width: "100%",
+                height: "auto",
+                maxWidth: "100%",
+              }}
             />
           ) : (
             ""
@@ -131,11 +135,7 @@ export const pageQuery = graphql`
         slug
         title
         description
-        featuredImage {
-          childImageSharp {
-            gatsbyImageData(layout: FULL_WIDTH)
-          }
-        }
+        featuredImage
       }
     }
   }
