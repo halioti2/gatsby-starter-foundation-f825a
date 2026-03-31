@@ -214,7 +214,7 @@ const HomePage = ({ data }) => {
             className="description"
             dangerouslySetInnerHTML={{ __html: html }}
           />
-          <Link
+          {/* <Link
             to={frontmatter.cta.ctaLink}
             className="button"
             sx={{
@@ -233,7 +233,7 @@ const HomePage = ({ data }) => {
             }}
           >
             {sIcons}
-          </div>
+          </div> */}
         </div>
         <div>
           {Image ? (

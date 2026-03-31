@@ -1,12 +1,11 @@
 ---
 template: index-page
 slug: /
-title: Wyatt Morriss
-tagline: Graphic Designer
+title: Ethan Davey
+tagline: User Research and UX/UI
 featuredImage: /assets/alex-zr48yvupk04-unsplash.jpg
 cta:
   ctaText: Know more
   ctaLink: /about
 ---
-
-He is a award winning gaming graphic designer, based in sunny side of California. Working as Principal designer at Bethesda
+Hi my name is Ethan I'm breaking into user research and web dev by building projects this portfolio.

@@ -110,7 +110,25 @@ _Note: You'll also see a second link: _`http://localhost:8000/___graphql`_. This
 
 Open the `gatsby-starter-foundation` directory in your code editor of choice and edit. Save your changes and the browser will update in real time!
 
-You can use Netlify CMS in you local just run `npx netlify-cms-proxy-server` and start run `gatsby develop`
+### Accessing the CMS locally
+
+Decap CMS (formerly Netlify CMS) will block you with a login screen when running locally. To bypass this, you need to run the local proxy server alongside Gatsby — this skips authentication entirely.
+
+**Terminal 1** — start the proxy server:
+
+```shell
+npx netlify-cms-proxy-server
+```
+
+**Terminal 2** — start Gatsby:
+
+```shell
+gatsby develop
+```
+
+Then open `http://localhost:8000/admin/` in your browser. The proxy server intercepts requests locally so Decap never tries to authenticate against Netlify Identity.
+
+> `local_backend: true` is already set in `static/admin/config.yml`, so no extra configuration is needed.
 
 ## 📁 Folder Structure
 

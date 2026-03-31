@@ -1,51 +1,56 @@
 ---
 template: about-page
 slug: /about
-title: About Foundation
+title: Spreadsheets
 ---
+Don't we all love spreadsheets? I mean who hasn't woken up and thought you know what I want to do with my day today? Stare at a spreadsheet copying, deleting records and cmd + f ing till my fingers go numb. \
+\
+Well thats the problem Victoria was having with her Spreadsheet when she entrusted me and my collaborator Kelvin Saldana with creating a tool that that could replace her current asset management spreadsheet. This spreadsheet had over 12 tabs of historical, currently checked out and defunct laptops records that Victoria uses to manage over 150 laptops for Pursuit's rotating cohorts and staff.
 
-Thank you! Now say "nuclear wessels"! No! Don't jump! A sexy mistake. Anyone who laughs is a communist!
+![spreadsheet](/assets/screenshot-2026-03-30-at-5.20.40 pm.png "Spreadsheet")
 
-A true inspiration for the children. And when we woke up, we had these bodies. Moving along… Do a flip! Michelle, I don't regret this, but I bth rue and lament it.
+## User Requirements
 
-![Toys](/assets/vanessa-bucceri-gdirwiyama8-unsplash.jpg "Toys")
+### Must
 
-Nay, I respect and admire Harold Zoid too much to beat him to death with his own Oscar. Well, then good news! It's a suppository. Then we'll go with that data file! **I've been there.** _My folks were always on me to groom myself and wear underpants._ What am I, the pope?
+* Victoria must be able to use our tool or the spreadsheet she is comfortable with. As a power user she is able to use her spreadsheet tool effectively and our tool should synchronize with the spreadsheet until she is ready to completely switch.
+* Our tool must be understandable at a glance so that steff and other staff members do not how to ask Victoria how to check out and return laptops.
+* Our tool must handle all laptop simpleMDM tasks victoria does on a regular basis. (clearing, locking, setting a pin). so that she does not have to navigate between this tool and simple MDM.
 
-Daddy Bender, we're hungry. We can't compete with Mom! Her company is big and evil! Ours is small and neutral! We're rescuing ya. We'll go deliver this crate like professionals, and then we'll go home.
+### Could
 
-I didn't ask for a completely reasonable excuse! I asked you to get busy! I never loved you. OK, this has gotta stop. I'm going to remind Fry of his humanity the way only a woman can. With a warning label this big, you know they gotta be fun!
+* Track the status of Victoria's communications with students about overdue equipment. Tracking number and times of reach outs and id needed lock date.
+* Automate initial reach outs and notify if student sends a response.
 
-1. And from now on you're all named Bender Jr.
-2. Ah, computer dating. It's like pimping, but you rarely have to use the phrase "upside your head."
-3. You wouldn't. Ask anyway!
+## Tech Stack
 
-Bender, quit destroying the universe! No! The cat shelter's on to me. Enough about your promiscuous mother, Hermes! We have bigger problems. Fatal. I guess if you want children beaten, you have to do it yourself.
+* Fly.io hosting provider. chosen for its generous free tier and support for sqlite.
+* Sqlite chosen as a light weight database.
+* Google sheets API with service account used to autoupdate and check status of google sheets.
 
-I decline the title of Iron Cook and accept the lesser title of Zinc Saucier, which I just made up. Uhh… also, comes with double prize money. You mean while I'm sleeping in it? I don't want to be rescued.
+## Our Solution
 
-- You know the worst thing about being a slave? They make you work, but they don't pay you or let you go.
-- And when we woke up, we had these bodies.
-- Spare me your space age technobabble, Attila the Hun!
+![Website with multiple columns and filters](/assets/screenshot-2026-03-30-at-5.52.16 pm.png "Our solution")
 
-Hi, I'm a naughty nurse, and I really need someone to talk to. \$9.95 a minute. But, like most politicians, he promised more than he could deliver. I don't know what you did, Fry, but once again, you screwed up! Now all the planets are gonna start cracking wise about our mamas.
+## **The Research**
 
-You mean while I'm sleeping in it? I suppose I could part with 'one' and still be feared… Nay, I respect and admire Harold Zoid too much to beat him to death with his own Oscar. Negative, bossy meat creature!
+![](/assets/screenshot-2026-03-31-at-1.11.10 pm.png)
 
-Oh God, what have I done? I don't 'need' to drink. I can quit anytime I want! Bender! Ship! Stop bickering or I'm going to come back there and change your opinions manually! Wow! A superpowers drug you can just rub onto your skin? You'd think it would be something you'd have to freebase.
+### **Categories**
 
-Ask her how her day was. In our darkest hour, we can stand erect, with proud upthrust bosoms. Why did you bring us here? I don't know what you did, Fry, but once again, you screwed up! Now all the planets are gonna start cracking wise about our mamas.
+When initialy converting the spreadsheet into our backend database we found the categories column especially challenging. We found that as victoria had grown the spreadsheet she had to take multiple factors into account. She needed a way to track if a laptop was ready to assign, assigned, or returned. but she also needed to know if a laptop was being leased or purchased when prioritizing which laptops should be assigned to make sure pursuit wouldnt end up paying twice if they had to pay to replace a laptop they were leasing.
 
-Good news, everyone! I've taught the toaster to feel love! This opera's as lousy as it is brilliant! Your lyrics lack subtlety. You can't just have your characters announce how they feel. That makes me feel angry!
+The categories, assigned to and return date columns denoted these different statuses but required the user to apply a formula to understand which status a laptop was currently in by checking the 3 columns.
 
-Hello Morbo, how's the family? You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Oh Leela! You're the only person I could turn to; you're the only person who ever loved me.
+![table showing The categories, assigned to and return date columns are unclear in which status laptop status is denoted.](/assets/screenshot-2026-03-31-at-1.11.10 pm.png "table 1")
 
-My fellow Earthicans, as I have explained in my book 'Earth in the Balance'', and the much more popular ''Harry Potter and the Balance of Earth', we need to defend our planet against pollution. Also dark wizards. Incidentally, you have a dime up your nose.
+Currently 3 fields: categories, assigned to, returned must be used in tandem to determine a laptop’s status. This is daunting for Victoria’s colleagues who occasionally use her spreadsheet and just need to know if they can assign a laptop and which to prioritize assigning.
 
-You are the last hope of the universe. You know the worst thing about being a slave? They make you work, but they don't pay you or let you go. I meant 'physically'. Look, perhaps you could let me work for a little food? I could clean the floors or paint a fence, or service you sexually?
+Below are 5 common examples of different variations of these fields and what ownership and status they map to in our new database design
 
-Hey, guess what you're accessories to. I feel like I was mauled by Jesus. Why would a robot need to drink? What are their names? Fry! Quit doing the right thing, you jerk! Doomsday device? Ah, now the ball's in Farnsworth's court!
+![diagram showing 3 column input and expected ownership and status output.](/assets/screenshot-2026-03-31-at-3.48.31 pm.png "diagram 2 detailing status and ownership rules")
 
-I saw you with those two "ladies of the evening" at Elzars. Explain that. Shinier than yours, meatbag. That's the ONLY thing about being a slave. Um, is this the boring, peaceful kind of taking to the streets?
+![Website with ownership and status columns clearly displaying 2 most important fields for assigning laptops.](/assets/screenshot-2026-03-31-at-3.53.23 pm.png "screenshot of our solution")
 
-Just once I'd like to eat dinner with a celebrity who isn't bound and gagged. Daddy Bender, we're hungry. Kids don't turn rotten just from watching TV. I just want to talk. It has nothing to do with mating. Fry, that doesn't make sense.
+
+As you can see above our solution clearly displays ownership and status, the 2 most important fields for assigning laptops.
