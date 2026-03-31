@@ -258,9 +258,11 @@ const HomePage = ({ data }) => {
           <div className="experiences-container">
             {experiences.edges
               .sort((a, b) => {
-                const orderA = a.node.frontmatter?.displayOrder ?? 999
-                const orderB = b.node.frontmatter?.displayOrder ?? 999
-                return orderA - orderB
+                const parseStart = dateRange => {
+                  if (!dateRange) return new Date(0)
+                  return new Date(dateRange.split("—")[0].trim())
+                }
+                return parseStart(b.node.frontmatter?.dateRange) - parseStart(a.node.frontmatter?.dateRange)
               })
               .map(({ node }) => {
                 const fm = node.frontmatter
